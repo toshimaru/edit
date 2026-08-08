@@ -39,11 +39,8 @@ pub fn ruby() {
             }
         } else if /(?:begin|break|case|do|elsif|else|end|ensure|for|if|in|next|redo|rescue|retry|return|then|unless|until|when|while)\>/ {
             yield keyword.control;
-        } else if /def\s+\w+\.(\w+[!?=]?)/ {
-            // Singleton method, as in `def self.foo`.
-            yield keyword.other;
-            yield $1 as method;
-        } else if /def\s+(\w+[!?=]?)/ {
+        } else if /def\s+(?:\w+\.)?(\w+[!?=]?)/ {
+            // The optional prefix covers singleton methods, as in `def self.foo`.
             yield keyword.other;
             yield $1 as method;
         } else if /(?:BEGIN|END|__ENCODING__|__FILE__|__LINE__|alias|and|class|defined\?|def|module|not|or|self|super|undef|yield)\>/ {
