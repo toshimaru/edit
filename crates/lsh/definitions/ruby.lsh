@@ -27,11 +27,25 @@ pub fn ruby() {
         } else if /'/ {
             single_quote_string();
         } else if /"/ {
-            double_quote_string();
+            until /$/ {
+                yield string;
+                if /\\./ {
+                    // Escape sequences. `\#{` escapes interpolation, so this must come first.
+                } else if /#\{[^}]*\}/ {
+                    // Interpolation. Nested braces, as in `#{ {a: 1} }`, are not supported.
+                    yield variable;
+                } else if /"/ {
+                    yield string;
+                    break;
+                }
+            }
         } else if /`/ {
             until /$/ {
+                yield string;
                 if /\\./ {
                     // Escape sequences
+                } else if /#\{[^}]*\}/ {
+                    yield variable;
                 } else if /`/ {
                     yield string;
                     break;
